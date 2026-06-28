@@ -1,0 +1,633 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Contact Form Modal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --white:#ffffff;
+    --gray-50:#f9fafb;
+    --gray-100:#f3f4f6;
+    --gray-200:#e5e7eb;
+    --gray-300:#d1d5db;
+    --gray-400:#9ca3af;
+    --gray-500:#6b7280;
+    --gray-600:#4b5563;
+    --gray-700:#374151;
+    --gray-800:#1f2937;
+    --gray-900:#111827;
+    --blue-50:#eff6ff;
+    --blue-100:#dbeafe;
+    --blue-500:#3b82f6;
+    --blue-600:#2563eb;
+    --blue-700:#1d4ed8;
+    --green-50:#f0fdf4;
+    --green-100:#dcfce7;
+    --green-500:#22c55e;
+    --green-600:#16a34a;
+    --green-700:#15803d;
+    --red-50:#fef2f2;
+    --red-100:#fee2e2;
+    --red-500:#ef4444;
+    --red-600:#dc2626;
+    --amber-400:#fbbf24;
+    --amber-500:#f59e0b;
+    --radius-sm:6px;
+    --radius:8px;
+    --radius-lg:12px;
+    --radius-xl:16px;
+  }
+ 
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:#0f172a;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+ 
+  .page-bg{
+    position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 50%,rgba(59,130,246,.08) 0%,transparent 60%),
+               radial-gradient(ellipse at 80% 20%,rgba(139,92,246,.06) 0%,transparent 50%),
+               #0f172a;
+  }
+ 
+  .trigger-card{
+    position:relative;z-index:1;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:24px;
+    padding:60px 48px;
+    text-align:center;
+    max-width:480px;
+    width:100%;
+  }
+  .trigger-card .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(59,130,246,.15);
+    border:1px solid rgba(59,130,246,.25);
+    color:#93c5fd;
+    font-size:12px;font-weight:500;
+    padding:5px 12px;border-radius:20px;
+    margin-bottom:20px;
+  }
+  .trigger-card h1{
+    font-size:28px;font-weight:600;
+    color:#f8fafc;line-height:1.25;
+    margin-bottom:12px;
+  }
+  .trigger-card p{
+    font-size:15px;color:#94a3b8;
+    line-height:1.65;margin-bottom:32px;
+  }
+  .open-btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 28px;
+    background:#2563eb;color:#fff;
+    border:none;border-radius:10px;
+    font-family:'Inter',system-ui,sans-serif;
+    font-size:15px;font-weight:500;
+    cursor:pointer;
+    transition:background .15s,transform .12s,box-shadow .15s;
+    box-shadow:0 0 0 0 rgba(37,99,235,0);
+  }
+  .open-btn:hover{background:#1d4ed8;box-shadow:0 0 0 4px rgba(37,99,235,.25);}
+  .open-btn:active{transform:scale(.97);}
+  .open-btn i{font-size:18px;}
+ 
+  .overlay{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(0,0,0,0);
+    backdrop-filter:blur(0px);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    pointer-events:none;
+    transition:background .3s ease, backdrop-filter .3s ease;
+  }
+  .overlay.open{
+    background:rgba(0,0,0,.6);
+    backdrop-filter:blur(8px);
+    pointer-events:all;
+  }
+ 
+  .modal{
+    background:#ffffff;
+    border-radius:20px;
+    width:100%;max-width:460px;
+    overflow:hidden;
+    transform:translateY(24px) scale(.96);
+    opacity:0;
+    transition:transform .4s cubic-bezier(.16,1,.3,1), opacity .3s ease;
+    box-shadow:0 32px 80px rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.08);
+  }
+  .overlay.open .modal{
+    transform:translateY(0) scale(1);
+    opacity:1;
+  }
+ 
+  .modal-accent{height:4px;background:linear-gradient(90deg,#2563eb,#7c3aed);}
+ 
+  .modal-header{
+    padding:24px 24px 0;
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  }
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .header-icon{
+    width:44px;height:44px;border-radius:12px;
+    background:#eff6ff;
+    display:grid;place-items:center;flex-shrink:0;
+  }
+  .header-icon i{font-size:22px;color:#2563eb;}
+  .header-title{font-size:17px;font-weight:600;color:#111827;line-height:1.3;}
+  .header-sub{font-size:13px;color:#6b7280;margin-top:2px;}
+  .close-btn{
+    width:32px;height:32px;border-radius:8px;
+    background:#f9fafb;border:1px solid #e5e7eb;
+    display:grid;place-items:center;
+    cursor:pointer;color:#6b7280;
+    transition:background .15s,color .15s;flex-shrink:0;
+    margin-top:2px;
+  }
+  .close-btn:hover{background:#f3f4f6;color:#111827;}
+  .close-btn i{font-size:15px;}
+ 
+  .stepper{
+    display:flex;align-items:center;
+    padding:20px 24px 0;gap:0;
+  }
+  .s-item{display:flex;align-items:center;gap:8px;}
+  .s-item:not(:last-child){flex:1;}
+  .s-dot{
+    width:28px;height:28px;border-radius:50%;
+    border:2px solid #e5e7eb;
+    display:grid;place-items:center;
+    font-size:12px;font-weight:600;color:#9ca3af;
+    transition:all .3s ease;flex-shrink:0;background:#fff;
+  }
+  .s-dot.active{background:#2563eb;border-color:#2563eb;color:#fff;}
+  .s-dot.done{background:#dcfce7;border-color:#16a34a;color:#16a34a;}
+  .s-dot.done i{font-size:13px;}
+  .s-label{font-size:12px;font-weight:500;color:#9ca3af;}
+  .s-label.active{color:#2563eb;}
+  .s-label.done{color:#16a34a;}
+  .s-line{flex:1;height:1.5px;background:#e5e7eb;margin:0 8px;transition:background .3s;}
+  .s-line.done{background:#16a34a;}
+ 
+  .modal-body{padding:20px 24px 0;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+ 
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  .fl{
+    font-size:12px;font-weight:600;color:#374151;
+    margin-bottom:7px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .fl span{font-size:11px;font-weight:400;color:#9ca3af;}
+  .fi,.fs,.ft{
+    width:100%;
+    background:#f9fafb;
+    border:1.5px solid #e5e7eb;
+    border-radius:var(--radius);
+    color:#111827;
+    font-family:'Inter',system-ui,sans-serif;
+    font-size:13.5px;
+    padding:10px 13px;
+    outline:none;
+    transition:border-color .15s,background .15s,box-shadow .15s;
+  }
+  .fi::placeholder,.ft::placeholder{color:#9ca3af;}
+  .fi:focus,.fs:focus,.ft:focus{
+    border-color:#2563eb;
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+  }
+  .fi.err,.ft.err{border-color:#ef4444;background:#fff;box-shadow:0 0 0 3px rgba(239,68,68,.1);}
+  .ft{resize:none;line-height:1.6;height:96px;}
+  .fe{font-size:11.5px;color:#ef4444;margin-top:5px;display:none;}
+  .fe.show{display:block;}
+  .fh{font-size:11.5px;color:#6b7280;margin-top:5px;}
+ 
+  .r2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+ 
+  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{
+    padding:6px 13px;border-radius:20px;
+    border:1.5px solid #e5e7eb;
+    font-size:12.5px;font-weight:500;color:#6b7280;
+    cursor:pointer;transition:all .15s;
+    background:#fff;font-family:'Inter',system-ui,sans-serif;
+  }
+  .chip:hover{border-color:#93c5fd;color:#2563eb;background:#eff6ff;}
+  .chip.on{border-color:#2563eb;color:#2563eb;background:#eff6ff;}
+ 
+  .char-row{display:flex;justify-content:flex-end;margin-top:5px;}
+  .char-txt{font-size:11.5px;color:#9ca3af;}
+  .char-txt.warn{color:#d97706;}
+  .char-txt.over{color:#dc2626;}
+  .char-bar{margin-top:6px;height:3px;background:#e5e7eb;border-radius:2px;overflow:hidden;}
+  .char-fill{height:100%;width:0%;background:#2563eb;border-radius:2px;transition:width .15s,background .15s;}
+  .char-fill.warn{background:#f59e0b;}
+  .char-fill.over{background:#ef4444;}
+ 
+  .stars{display:flex;gap:4px;}
+  .star{font-size:26px;cursor:pointer;color:#d1d5db;transition:color .1s,transform .1s;user-select:none;line-height:1;}
+  .star:hover,.star.lit{color:#f59e0b;}
+  .star:hover{transform:scale(1.1);}
+ 
+  .check-row{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 14px;
+    background:#f9fafb;border:1.5px solid #e5e7eb;
+    border-radius:var(--radius);cursor:pointer;
+  }
+  .check-row input{width:15px;height:15px;accent-color:#2563eb;cursor:pointer;}
+  .check-row span{font-size:13px;color:#374151;}
+ 
+  .modal-footer{
+    padding:16px 24px 20px;
+    margin-top:20px;
+    border-top:1px solid #f3f4f6;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;
+  }
+  .foot-note{font-size:12px;color:#9ca3af;display:flex;align-items:center;gap:5px;}
+  .foot-note i{font-size:14px;}
+  .foot-btns{display:flex;gap:8px;}
+  .btn-back{
+    padding:9px 18px;border-radius:var(--radius);
+    border:1.5px solid #e5e7eb;background:#fff;
+    color:#374151;font-size:13px;font-weight:500;
+    cursor:pointer;font-family:'Inter',system-ui,sans-serif;
+    transition:background .15s,border-color .15s;
+  }
+  .btn-back:hover{background:#f9fafb;border-color:#d1d5db;}
+  .btn-next{
+    padding:9px 20px;border-radius:var(--radius);
+    background:#2563eb;color:#fff;
+    border:none;font-size:13px;font-weight:500;
+    cursor:pointer;font-family:'Inter',system-ui,sans-serif;
+    display:inline-flex;align-items:center;gap:7px;
+    transition:background .15s,transform .1s,box-shadow .15s;
+    box-shadow:0 1px 3px rgba(37,99,235,.3);
+  }
+  .btn-next:hover{background:#1d4ed8;box-shadow:0 0 0 3px rgba(37,99,235,.2);}
+  .btn-next:active{transform:scale(.97);}
+  .btn-next i{font-size:14px;}
+ 
+  .success-body{
+    padding:10px 24px 28px;
+    display:flex;flex-direction:column;align-items:center;
+    text-align:center;gap:16px;
+  }
+  .success-ring{
+    width:68px;height:68px;border-radius:50%;
+    background:#dcfce7;
+    display:grid;place-items:center;
+    animation:popIn .5s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  .success-ring i{font-size:30px;color:#16a34a;}
+  .success-h{font-size:20px;font-weight:600;color:#111827;}
+  .success-p{font-size:14px;color:#6b7280;line-height:1.65;max-width:300px;}
+  .ticket{
+    background:#f9fafb;border:1.5px solid #e5e7eb;
+    border-radius:10px;padding:12px 16px;
+    width:100%;display:flex;align-items:center;gap:10px;
+  }
+  .ticket-id{
+    font-size:12px;font-weight:600;
+    color:#2563eb;background:#eff6ff;
+    padding:4px 10px;border-radius:6px;white-space:nowrap;
+  }
+  .ticket-note{font-size:12px;color:#6b7280;text-align:left;line-height:1.4;}
+  .btn-done{
+    width:100%;padding:12px;border-radius:var(--radius);
+    background:#2563eb;color:#fff;
+    border:none;font-size:14px;font-weight:500;
+    cursor:pointer;font-family:'Inter',system-ui,sans-serif;
+    transition:background .15s;
+    box-shadow:0 1px 3px rgba(37,99,235,.3);
+  }
+  .btn-done:hover{background:#1d4ed8;}
+ 
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+  .shake{animation:shake .38s ease;}
+ 
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spin{display:inline-block;animation:spin .8s linear infinite;}
+ 
+  @media(max-width:500px){
+    .r2{grid-template-columns:1fr;}
+    .modal-footer{flex-direction:column-reverse;align-items:stretch;}
+    .foot-btns{flex-direction:column;}
+    .btn-back,.btn-next{justify-content:center;}
+  }
+</style>
+</head>
+<body>
+<div class="page-bg"></div>
+ 
+<div class="trigger-card">
+  <div class="badge"><i class="ti ti-message-2" style="font-size:13px"></i> Contact form</div>
+  <h1>Get in touch with us</h1>
+  <p>Have a question, feedback, or just want to say hello? We read every message and reply within 24 hours.</p>
+  <button class="open-btn" onclick="openModal()">
+    <i class="ti ti-send"></i>
+    Open contact form
+  </button>
+</div>
+ 
+<div class="overlay" id="overlay" onclick="handleOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-accent"></div>
+ 
+    <div class="modal-header">
+      <div class="header-left">
+        <div class="header-icon"><i class="ti ti-headset"></i></div>
+        <div>
+          <div class="header-title" id="mTitle">Get in touch</div>
+          <div class="header-sub" id="mSub">We reply within 24 hours.</div>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeModal()" aria-label="Close">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+ 
+    <div class="stepper" id="stepper">
+      <div class="s-item">
+        <div class="s-dot active" id="sd1">1</div>
+        <div class="s-label active" id="sl1">Your info</div>
+      </div>
+      <div class="s-line" id="ln1"></div>
+      <div class="s-item">
+        <div class="s-dot" id="sd2">2</div>
+        <div class="s-label" id="sl2">Message</div>
+      </div>
+      <div class="s-line" id="ln2"></div>
+      <div class="s-item">
+        <div class="s-dot" id="sd3">3</div>
+        <div class="s-label" id="sl3">Feedback</div>
+      </div>
+    </div>
+ 
+    <div class="modal-body">
+      <div class="panel active" id="p1">
+        <div class="r2">
+          <div class="field">
+            <div class="fl">First name</div>
+            <input class="fi" id="fn" type="text" placeholder="Alex" oninput="clearErr('fn','efn')"/>
+            <div class="fe" id="efn">Enter your first name.</div>
+          </div>
+          <div class="field">
+            <div class="fl">Last name</div>
+            <input class="fi" id="ln" type="text" placeholder="Johnson" oninput="clearErr('ln','eln')"/>
+            <div class="fe" id="eln">Enter your last name.</div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="fl">Email address</div>
+          <input class="fi" id="em" type="email" placeholder="alex@example.com" oninput="clearErr('em','eem')"/>
+          <div class="fe" id="eem">Enter a valid email.</div>
+        </div>
+        <div class="field">
+          <div class="fl">What's this about?</div>
+          <div class="chips" id="chips">
+            <div class="chip on" onclick="pick(this)">General</div>
+            <div class="chip" onclick="pick(this)">Bug report</div>
+            <div class="chip" onclick="pick(this)">Feature idea</div>
+            <div class="chip" onclick="pick(this)">Billing</div>
+            <div class="chip" onclick="pick(this)">Other</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="panel" id="p2">
+        <div class="field">
+          <div class="fl">Subject <span>optional</span></div>
+          <input class="fi" id="subj" type="text" placeholder="Brief summary…"/>
+        </div>
+        <div class="field">
+          <div class="fl">
+            Message
+            <span id="cLbl">0 / 500</span>
+          </div>
+          <textarea class="ft" id="msg" placeholder="Tell us what's on your mind…" maxlength="500" oninput="updateChar();clearErr('msg','emsg')"></textarea>
+          <div class="char-bar"><div class="char-fill" id="cFill"></div></div>
+          <div class="fe" id="emsg">Write at least 20 characters.</div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <div class="fl">Preferred reply channel</div>
+          <select class="fs" id="reply">
+            <option value="email">Email (default)</option>
+            <option value="any">Any channel</option>
+            <option value="none">No reply needed</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="panel" id="p3">
+        <div class="field">
+          <div class="fl">Rate your experience <span>optional</span></div>
+          <div class="stars" id="stars">
+            <span class="star" data-v="1" onclick="rate(1)" onmouseover="hoverStar(1)" onmouseout="unhoverStar()">★</span>
+            <span class="star" data-v="2" onclick="rate(2)" onmouseover="hoverStar(2)" onmouseout="unhoverStar()">★</span>
+            <span class="star" data-v="3" onclick="rate(3)" onmouseover="hoverStar(3)" onmouseout="unhoverStar()">★</span>
+            <span class="star" data-v="4" onclick="rate(4)" onmouseover="hoverStar(4)" onmouseout="unhoverStar()">★</span>
+            <span class="star" data-v="5" onclick="rate(5)" onmouseover="hoverStar(5)" onmouseout="unhoverStar()">★</span>
+          </div>
+          <div class="fh" id="ratingLabel">Click a star to rate</div>
+        </div>
+        <div class="field">
+          <div class="fl">Anything else? <span>optional</span></div>
+          <textarea class="ft" id="extra" placeholder="Additional context, links, or attachments info…" style="height:80px"></textarea>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="check-row">
+            <input type="checkbox" id="cb" checked/>
+            <span>Send me a confirmation email</span>
+          </label>
+        </div>
+      </div>
+ 
+      <div class="panel" id="p4">
+        <div class="success-body">
+          <div class="success-ring"><i class="ti ti-check"></i></div>
+          <div class="success-h">Message sent!</div>
+          <div class="success-p" id="successP">We'll get back to you within 24 hours.</div>
+          <div class="ticket">
+            <div class="ticket-id" id="tid">#MSG-0000</div>
+            <div class="ticket-note">Your reference ID — use this if you need to follow up with us.</div>
+          </div>
+          <button class="btn-done" onclick="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="modal-footer" id="mFoot">
+      <div class="foot-note"><i class="ti ti-lock"></i> Your data is encrypted</div>
+      <div class="foot-btns">
+        <button class="btn-back" id="bBack" style="display:none" onclick="goBack()">Back</button>
+        <button class="btn-next" id="bNext" onclick="goNext()">
+          Next <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<script>
+let step=1, rating=0;
+ 
+const titles=['','Your info','Your message','One more thing','All done!'];
+const subs=['','Tell us who you are.','What can we help with?','Optional but helpful.','Your message is on its way.'];
+ 
+function openModal(){
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('fn').focus(),80);
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow='';
+  setTimeout(resetAll,380);
+}
+function handleOverlay(e){if(e.target===document.getElementById('overlay'))closeModal();}
+ 
+function resetAll(){
+  step=1;rating=0;
+  ['fn','ln','em','subj','msg','extra'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('.fe').forEach(e=>e.classList.remove('show'));
+  document.querySelectorAll('.fi.err,.ft.err').forEach(e=>e.classList.remove('err'));
+  document.querySelectorAll('.star').forEach(s=>s.classList.remove('lit'));
+  document.getElementById('cFill').style.width='0%';
+  document.getElementById('cLbl').textContent='0 / 500';
+  document.getElementById('ratingLabel').textContent='Click a star to rate';
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0));
+  document.getElementById('cb').checked=true;
+  document.getElementById('mFoot').style.display='';
+  document.getElementById('stepper').style.display='';
+  updateUI();
+}
+ 
+function updateUI(){
+  for(let i=1;i<=4;i++){
+    document.getElementById('p'+i).classList.toggle('active',i===step);
+  }
+  document.getElementById('mTitle').textContent=titles[step];
+  document.getElementById('mSub').textContent=subs[step];
+  const back=document.getElementById('bBack');
+  const next=document.getElementById('bNext');
+  if(step===4){
+    document.getElementById('mFoot').style.display='none';
+    document.getElementById('stepper').style.display='none';
+    return;
+  }
+  document.getElementById('mFoot').style.display='';
+  document.getElementById('stepper').style.display='';
+  back.style.display=step>1?'':'none';
+  next.innerHTML=step===3?'Submit <i class="ti ti-send"></i>':'Next <i class="ti ti-arrow-right"></i>';
+  for(let i=1;i<=3;i++){
+    const dot=document.getElementById('sd'+i);
+    const lbl=document.getElementById('sl'+i);
+    const line=document.getElementById('ln'+i);
+    if(i<step){
+      dot.className='s-dot done';dot.innerHTML='<i class="ti ti-check" style="font-size:12px"></i>';
+      lbl.className='s-label done';if(line)line.classList.add('done');
+    } else if(i===step){
+      dot.className='s-dot active';dot.textContent=i;
+      lbl.className='s-label active';
+    } else {
+      dot.className='s-dot';dot.textContent=i;
+      lbl.className='s-label';if(line)line.classList.remove('done');
+    }
+  }
+}
+ 
+function validate(){
+  if(step===1){
+    let ok=true;
+    const fn=document.getElementById('fn');
+    const ln=document.getElementById('ln');
+    const em=document.getElementById('em');
+    if(!fn.value.trim()){fn.classList.add('err');document.getElementById('efn').classList.add('show');ok=false;}
+    if(!ln.value.trim()){ln.classList.add('err');document.getElementById('eln').classList.add('show');ok=false;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim())){em.classList.add('err');document.getElementById('eem').classList.add('show');ok=false;}
+    return ok;
+  }
+  if(step===2){
+    const msg=document.getElementById('msg');
+    if(msg.value.trim().length<20){msg.classList.add('err');document.getElementById('emsg').classList.add('show');return false;}
+  }
+  return true;
+}
+ 
+function goNext(){
+  if(!validate()){
+    document.getElementById('modal').classList.add('shake');
+    setTimeout(()=>document.getElementById('modal').classList.remove('shake'),400);
+    return;
+  }
+  if(step===3){
+    const fn=document.getElementById('fn').value.trim();
+    const em=document.getElementById('em').value.trim();
+    document.getElementById('successP').textContent='Thanks '+fn+' — we\'ll reply to '+em+' within 24 hours.';
+    document.getElementById('tid').textContent='#MSG-'+Math.floor(Math.random()*9000+1000);
+    step=4;updateUI();return;
+  }
+  step++;updateUI();
+}
+function goBack(){if(step>1){step--;updateUI();}}
+ 
+function clearErr(fid,eid){
+  document.getElementById(fid).classList.remove('err');
+  document.getElementById(eid).classList.remove('show');
+}
+ 
+function pick(el){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+ 
+function updateChar(){
+  const v=document.getElementById('msg').value.length;
+  const pct=Math.round(v/500*100);
+  const fill=document.getElementById('cFill');
+  const lbl=document.getElementById('cLbl');
+  fill.style.width=pct+'%';
+  lbl.textContent=v+' / 500';
+  const cls=v>450?'over':v>350?'warn':'';
+  fill.className='char-fill'+(cls?' '+cls:'');
+  lbl.className='char-txt'+(cls?' '+cls:'');
+}
+ 
+let savedRating=0;
+function hoverStar(n){
+  document.querySelectorAll('.star').forEach(s=>s.classList.toggle('lit',parseInt(s.dataset.v)<=n));
+}
+function unhoverStar(){
+  document.querySelectorAll('.star').forEach(s=>s.classList.toggle('lit',parseInt(s.dataset.v)<=savedRating));
+}
+function rate(n){
+  savedRating=n;rating=n;
+  document.querySelectorAll('.star').forEach(s=>s.classList.toggle('lit',parseInt(s.dataset.v)<=n));
+  const labels=['','Poor','Fair','Good','Great','Excellent!'];
+  document.getElementById('ratingLabel').textContent=labels[n];
+}
+ 
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('overlay').classList.contains('open'))closeModal();
+});
+</script>
+</body>
+</html>
